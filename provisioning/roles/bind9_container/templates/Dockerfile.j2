@@ -1,0 +1,13 @@
+FROM centos:latest
+RUN yum install curl net-tools bind bind-utils -y
+COPY named.conf /etc/
+COPY named.conf.local /etc/
+RUN chown root:named /etc/named.conf.local
+COPY db.zone /var/named/data/
+#COPY db.0.17.172 /var/named/data/
+RUN chown root:named /var/named/data/db.zone 
+#RUN chown root:named /var/named/data/db.0.17.172
+RUN chown root:named /var/named/data
+EXPOSE 53/tcp
+EXPOSE 53/udp
+CMD /usr/sbin/named -4 -u named -c /etc/named.conf -f 

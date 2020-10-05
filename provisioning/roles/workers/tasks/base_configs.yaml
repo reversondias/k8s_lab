@@ -1,0 +1,34 @@
+---
+
+- name: Install OS dependencies
+  apt:
+    pkg: 
+      - socat
+      - conntrack
+      - ipset
+    state: present
+    update_cache: yes
+    
+- name: Disble swap on Worker node
+  shell: |
+    swapoff -a 
+    sed -i '/swap/d' /etc/fstab
+
+- name: Create installations directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - /etc/cni/net.d 
+    - /opt/cni/bin 
+    - /var/lib/kubelet 
+    - /var/lib/kube-proxy 
+    - /var/lib/kubernetes 
+    - /var/run/kubernetes
+    - /etc/containerd/
+
+- name: Enable IP forwarding in the Kernel
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    state: present

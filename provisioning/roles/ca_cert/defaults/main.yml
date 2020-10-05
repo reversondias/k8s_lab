@@ -1,0 +1,21 @@
+---
+# defaults file for ca_cert
+cfssl_url: https://storage.googleapis.com/kubernetes-the-hard-way/cfssl/1.4.1/linux/cfssl
+cfssljson_url: https://storage.googleapis.com/kubernetes-the-hard-way/cfssl/1.4.1/linux/cfssljson
+
+workers:
+  - { name: 'worker01', ip_address: "{{ groups['workers'][0] }}" }
+  - { name: 'worker02', ip_address: "{{ groups['workers'][1] }}" }
+  - { name: 'worker03', ip_address: "{{ groups['workers'][2] }}" }
+
+## Parameters to CSR
+algo: rsa
+size: 2048
+country: BR
+locality: Sao_Paulo
+org_unit: Kubernetes The Hard Way
+state: Sao_Paulo
+
+### This IP is the first IP of POD CIDR range. So, that IP have to match with range configure on kube-controller-manager in cluster_cidr variable.
+### The default value is 10.32.0.1 because follow the default value of range 10.32.0.0/16
+kubernets_service_ip: "10.32.0.1"

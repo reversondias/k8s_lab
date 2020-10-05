@@ -1,0 +1,16 @@
+---
+
+- name: Create SystemD Unit File
+  template:
+    src: etcd.service.j2
+    dest: /etc/systemd/system/etcd.service
+
+- name: Reload Systemd Daemon
+  systemd:
+    daemon_reload: yes
+
+- name: Restart ETCD service
+  systemd:
+    name: etcd
+    state: started
+    enabled: yes

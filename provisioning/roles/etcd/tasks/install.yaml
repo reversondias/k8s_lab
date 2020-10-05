@@ -1,0 +1,49 @@
+---
+
+- name: Download ETCD
+  get_url:
+    url: "{{ etcd_url }}"
+    dest: /opt/etcd.tar.gz
+  register: data_get_etcd
+
+- name: Descompact etcd .tar file
+  unarchive:
+     src: "{{ data_get_etcd.dest }}"
+     dest: /usr/local/bin/
+     remote_src: yes
+     mode: "u=wrx,go="
+     owner: root
+     group: root
+     extra_opts:
+      - --wildcards 
+      - 'etcd*/etcd*'
+      - --strip-components 
+      - "1"
+      - --exclude
+      - Documentation
+
+- name: Remove tar.gz file
+  file:
+    path: "{{ data_get_etcd.dest }}"
+    state: absent
+
+- name: Create /etc/etcd directory
+  file:
+    path: /etc/etcd
+    state: directory
+
+- name: Create /var/lib/etcd directory
+  file:
+    path: /var/lib/etcd
+    state: directory
+    mode: "u=rwx,go="
+
+- name: Copy certificates to ETCD
+  copy:
+    src: "/root/{{ item }}"
+    dest: /etc/etcd/
+    remote_src: yes
+  loop:
+    - ca.pem
+    - kubernetes-key.pem
+    - kubernetes.pem

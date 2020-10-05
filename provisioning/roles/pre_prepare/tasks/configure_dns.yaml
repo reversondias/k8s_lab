@@ -1,0 +1,17 @@
+---
+
+- name: Disabling systemd-resolv
+  systemd:
+    name: systemd-resolved
+    state: stopped
+    enabled: no
+
+- name: Remove synlink /run/systemd/resolve/stub-resolv.conf
+  file:
+    path: /run/systemd/resolve/stub-resolv.conf
+    state: absent
+
+- name: Create file /etc/resolv.conf
+  template:
+    src: resolv.conf.j2
+    dest: /etc/resolv.conf

@@ -1,0 +1,14 @@
+---
+
+- name: Create Bind9 container 
+  docker_container:
+    name: bind9_dns
+    image: bind9_centos7:latest
+    ports:
+      - "{{ bind_port }}:53/tcp"
+      - "{{ bind_port }}:53/udp"
+    hostname: dns_server
+    dns_servers:
+      - 8.8.8.8
+      - 8.8.4.4
+      - 127.0.0.1

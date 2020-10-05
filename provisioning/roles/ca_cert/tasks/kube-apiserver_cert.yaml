@@ -1,0 +1,24 @@
+---
+
+- name: Create Kube API Server CSR
+  vars:
+    common_name: kubernetes
+    organization: Kubernetes
+  template:
+    src: common-csr.json.j2
+    dest: /opt/kubernetes-csr.json
+
+- name: Generate Key and PEM to Kube API Server
+  vars:
+    kubernetes_names: "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster,kubernetes.svc.cluster.local,kubernetes.{{ domain_name }}"
+    kube_apiservers_ip: "{{ groups['controllers'][0] }},{{ groups['controllers'][1] }},{{ groups['controllers'][2] }}"
+  shell: |
+    cfssl gencert \
+    -ca=ca.pem \
+    -ca-key=ca-key.pem \
+    -config=ca-config.json \
+    -hostname={{ kubernets_service_ip }},{{ kube_apiservers_ip }},{{ groups['haproxy'][0] }},127.0.0.1,{{ kubernetes_names }} \
+    -profile=kubernetes \
+    kubernetes-csr.json | cfssljson -bare kubernetes
+  args:
+    chdir: /opt

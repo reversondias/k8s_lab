@@ -1,0 +1,28 @@
+---
+
+- name: Create Cluster Role YAML file to Access Kubelet
+  template:
+    src: cluster_role_kubelet.yaml.j2
+    dest: /opt/cluster_role_kubelet.yaml
+
+- name: Create Cluster Role Binding YAML file to Access Kubelet
+  template:
+    src: cluster_role_binding_kubelet.yaml.j2
+    dest: /opt/cluster_role_binding_kubelet.yaml
+
+- name: Create Cluster Role to Access Kubelet by kubcetl
+  shell: |
+    kubectl apply --kubeconfig ~/admin.kubeconfig -f cluster_role_kubelet.yaml
+  args:
+    chdir: /opt
+
+- name: Create Cluster Role Biding to Access Kubelet by kubectl
+  shell: |
+    kubectl apply --kubeconfig ~/admin.kubeconfig -f cluster_role_binding_kubelet.yaml
+  args:
+    chdir: /opt
+
+#####################################################################################################
+###    The Kubernetes API Server authenticates to the Kubelet as the kubernetes user using the    ###
+###       client certificate as defined by the --kubelet-client-certificate flag.                 ###
+#####################################################################################################

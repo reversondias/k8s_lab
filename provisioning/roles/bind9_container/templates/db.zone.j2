@@ -1,0 +1,16 @@
+$TTL 604800
+@         IN       SOA      ns1.{{ domain_name }}. admin.{{ domain_name }}. (
+          2013120400 ; Serial
+          604800     ; Refresh
+          86400      ; Retry
+          2419200    ; Expire
+          604800 )   ; Negative Cache TTL
+;
+                   NS       ns1.{{ domain_name }}.
+ns1.{{ domain_name }}.   A        {{ groups['haproxy'][0] }}
+{% for key in registrys %}
+{{ registrys[key].name }}		{{ registrys[key].type }}		{{ registrys[key].ip }}
+{% endfor %}
+
+www            CNAME        ns1.{{ domain_name }}.
+

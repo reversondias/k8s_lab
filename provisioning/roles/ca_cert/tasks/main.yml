@@ -1,0 +1,15 @@
+---
+## tasks file for ca_cert
+- include: install_cfssl.yaml
+- include: ca_cert.yaml
+- include: admin_cert.yaml
+- include: worker_cert.yaml
+- include: kube-controller-manager_cert.yaml
+- include: kube-proxy_cert.yaml
+- include: kube-scheduler_cert.yaml
+- include: kube-apiserver_cert.yaml
+- include: ingress-controller_cert.yaml
+- include: serviceaccount_cert.yaml
+- include: kubeconfig_controllers.yaml
+- include: encryptation.yaml
+- include: copy_certs_keys.yaml

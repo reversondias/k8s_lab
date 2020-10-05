@@ -1,0 +1,21 @@
+---
+
+- name: Create CSR can that use in a Ingress Cotroller 
+  vars:
+    common_name: ingress-controller
+    organization: Ingress-Controller
+  template:
+    src: common-csr.json.j2
+    dest: /opt/ingress_controller-csr.json
+
+- name: Generate Key and PEM to Ingress Cotroller
+  shell: |
+    cfssl gencert \
+    -ca=ca.pem \
+    -ca-key=ca-key.pem \
+    -config=ca-config.json \
+    -hostname=*.{{ domain_name }} \
+    -profile=kubernetes \
+    ingress_controller-csr.json | cfssljson -bare ingress-controller
+  args:
+    chdir: /opt

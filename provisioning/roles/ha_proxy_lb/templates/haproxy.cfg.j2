@@ -1,0 +1,106 @@
+global
+	log /dev/log	local0
+	log /dev/log	local1 notice
+	chroot /var/lib/haproxy
+	stats socket /run/haproxy/admin.sock mode 660 level admin
+	stats timeout 30s
+	user haproxy
+	group haproxy
+	daemon
+
+	# Default SSL material locations
+	ca-base /etc/ssl/certs
+	crt-base /etc/ssl/private
+
+	# Default ciphers to use on SSL-enabled listening sockets.
+	# For more information, see ciphers(1SSL). This list is from:
+	#  https://hynek.me/articles/hardening-your-web-servers-ssl-ciphers/
+	ssl-default-bind-ciphers ECDH+AESGCM:DH+AESGCM:ECDH+AES256::RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS
+	ssl-default-bind-options no-sslv3
+
+defaults
+	log	global
+	mode	http
+	option	httplog
+	option	dontlognull
+	timeout connect 5000
+	timeout client  50000
+	timeout server  50000
+	errorfile 400 /etc/haproxy/errors/400.http
+	errorfile 403 /etc/haproxy/errors/403.http
+	errorfile 408 /etc/haproxy/errors/408.http
+	errorfile 500 /etc/haproxy/errors/500.http
+	errorfile 502 /etc/haproxy/errors/502.http
+	errorfile 503 /etc/haproxy/errors/503.http
+	errorfile 504 /etc/haproxy/errors/504.http
+
+
+frontend Local_Server
+    bind {{ ansible_facts['default_ipv4']['address'] }}:443
+    bind {{ ansible_facts['default_ipv4']['address'] }}:6443
+    option tcplog
+    mode tcp
+    default_backend kube_apiserver
+
+backend kube_apiserver
+    balance roundrobin
+    mode tcp
+{% for key in kube_apiserver %}
+    server {{ kube_apiserver[key].fqdn }}  {{ kube_apiserver[key].ip }}:6443
+{% endfor %}
+
+frontend Ingress_http
+    bind {{ ansible_facts['default_ipv4']['address'] }}:80
+    http-request redirect
+    default_backend ingress_controller_http
+
+backend ingress_controller_http
+    balance roundrobin
+    option forwardfor
+    http-request set-header X-Forwarded-Port %[dst_port]
+    http-request add-header X-Forwarded-Proto https if { ssl_fc }
+    option httpchk HEAD / HTTP/1.1rnHost:localhost
+{% for key in workers %}
+    server {{ workers[key].fqdn }}  {{ workers[key].ip }}:30080
+{% endfor %}
+
+frontend Ingress_https
+    bind {{ ansible_facts['default_ipv4']['address'] }}:443 ssl crt /etc/ssl/ingress_controller/ingress_controller.pem
+    http-request redirect scheme https unless { ssl_fc }
+    default_backend ingress_controller_https
+
+backend ingress_controller_https
+    balance roundrobin
+    option forwardfor
+    http-request set-header X-Forwarded-Port %[dst_port]
+    http-request add-header X-Forwarded-Proto https if { ssl_fc }
+    option httpchk HEAD / HTTP/1.1rnHost:localhost
+{% for key in workers %}
+    server {{ workers[key].fqdn }}  {{ workers[key].ip }}:30443
+{% endfor %}
+
+#frontend Local_Server_HTTPS
+#	bind {{ ansible_facts['default_ipv4']['address'] }}:80
+#	bind {{ ansible_facts['default_ipv4']['address'] }}:443 ssl crt /etc/ssl/kube_apiserver/apiserver.pem
+#	bind {{ ansible_facts['default_ipv4']['address'] }}:6443 ssl crt /etc/ssl/kube_apiserver/apiserver.pem
+#	http-request redirect scheme https unless { ssl_fc }
+#	default_backend kube_apiserver_https
+#
+#backend kube_apiserver_https
+#    balance roundrobin
+#    option forwardfor
+#    http-request set-header X-Forwarded-Port %[dst_port]
+#    http-request add-header X-Forwarded-Proto https if { ssl_fc }
+#    option httpchk HEAD / HTTP/1.1rnHost:localhost
+{% for key in kube_apiserver %}
+#    server {{ kube_apiserver[key].fqdn }}  {{ kube_apiserver[key].ip }}:6443 ssl ca-file /etc/ssl/kube_apiserver/ca.pem
+{% endfor %}
+
+listen stats 
+    bind *:1936
+    stats enable
+    stats hide-version
+    stats refresh 30s
+    stats show-node
+    stats auth username:password
+    stats uri  /stats

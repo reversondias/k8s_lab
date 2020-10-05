@@ -1,0 +1,10 @@
+---
+
+- name: Install Weave Net
+  template:
+    src: coredns.yaml.j2
+    dest: /opt/coredns.yaml
+
+- name: Apply coreDNS
+  shell: |
+    kubectl apply -f /opt/coredns.yaml

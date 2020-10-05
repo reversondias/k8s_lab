@@ -1,0 +1,64 @@
+---
+- name: "Createing kubeconfig to Workers --> set-cluster <-- "
+  shell: |
+    kubectl config set-cluster kubernetes-the-hard-way \
+    --certificate-authority=ca.pem \
+    --embed-certs=true \
+    --server=https://"{{ groups['haproxy'][0] }}":6443 \
+    --kubeconfig={{ ansible_facts['hostname'] }}.kubeconfig
+  args:
+    chdir: ~/
+
+- name: "Createing kubeconfig to Workers --> set-credentials <--"
+  shell: |
+    kubectl config set-credentials system:node:{{ ansible_facts['hostname'] }} \
+    --client-certificate={{ ansible_facts['hostname'] }}.pem \
+    --client-key={{ ansible_facts['hostname'] }}-key.pem \
+    --embed-certs=true \
+    --kubeconfig={{ ansible_facts['hostname'] }}.kubeconfig
+  args:
+    chdir: ~/
+
+- name: "Createing kubeconfig to Workers --> set-context <--"
+  shell: |
+    kubectl config set-context default \
+    --cluster=kubernetes-the-hard-way \
+    --user=system:node:{{ ansible_facts['hostname'] }} \
+    --kubeconfig={{ ansible_facts['hostname'] }}.kubeconfig
+  args:
+    chdir: ~/
+
+- name: "Createing kubeconfig to Workers --> use-context <--"
+  shell: |
+    kubectl config use-context default --kubeconfig={{ ansible_facts['hostname'] }}.kubeconfig
+  args:
+    chdir: ~/
+
+- name: Move kubeconfig file to their directories
+  copy:
+    src: "/root/{{ ansible_facts['hostname'] }}.kubeconfig"
+    dest: /var/lib/kubelet/kubeconfig
+    remote_src: yes
+
+- name: Download kubelet
+  get_url:
+    url: "{{ kubelet_url }}"
+    dest: /usr/local/bin/
+    mode: "u+x"
+
+- name: Create Kubelet configuration YAML file
+  template:
+    src: kubelet-config.yaml.j2
+    dest: /var/lib/kubelet/kubelet-config.yaml
+
+- name: Create Kubelet SystemD unit service file
+  template:
+    src: kubelet.service.j2
+    dest: /etc/systemd/system/kubelet.service
+
+- name: Start and Enable kubelet Services
+  systemd:
+    name: kubelet
+    state: started
+    enabled: yes
+  notify: Reload Systemd Daemon

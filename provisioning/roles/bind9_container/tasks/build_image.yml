@@ -1,0 +1,51 @@
+---
+- name: Make temp dir
+  file:
+    path: /tmp/temp_build
+    state: directory
+
+- name: Make Dockerfile to build docker image
+  template:
+    src: Dockerfile.j2
+    dest: /tmp/temp_build/Dockerfile
+    owner: root
+    mode: 0744
+
+- name: Make template config files to build docker image
+  template:
+    src: named.conf.j2
+    dest: /tmp/temp_build/named.conf
+    owner: root
+    mode: 0644
+
+- name: Make template config files to build docker image
+  template:
+    src: named.conf.local.j2
+    dest: /tmp/temp_build/named.conf.local
+    owner: root
+    mode: 0644
+
+- name: Make template DB files to build docker image
+  template:
+    src: db.zone.j2
+    dest: /tmp/temp_build/db.zone
+    owner: root
+    mode: 0644
+
+#- name: Make template DB (reverse) files to build docker image
+#  template:
+#    src: db.0.17.172.j2
+#    dest: /tmp/temp_build/db.0.17.172
+#    owner: root
+#    mode: 0644
+
+- name: Build docker image to bind9
+  docker_image:
+    dockerfile: Dockerfile
+    name: bind9_centos7
+    path: /tmp/temp_build/
+
+- name: Remove temp dir
+  file:
+    path: /tmp/temp_build
+    state: absent

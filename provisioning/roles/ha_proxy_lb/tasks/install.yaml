@@ -1,0 +1,12 @@
+---
+
+- name: Configure HA proxy APT repo
+  apt_repository:
+    repo: ppa:vbernat/haproxy-1.8
+  #shell: add-apt-repository 
+
+- name: Install HA proxy package
+  apt:
+    name: haproxy
+    state: present
+    update_cache: yes

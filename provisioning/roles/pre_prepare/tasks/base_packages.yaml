@@ -1,0 +1,6 @@
+---
+
+- name: Install base packages APT
+  apt:
+    name: "{{ base_apt_pkg }}"
+    state: present

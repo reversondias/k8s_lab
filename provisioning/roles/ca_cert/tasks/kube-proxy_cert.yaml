@@ -1,0 +1,20 @@
+---
+
+- name: Create Kube Proxy CSR
+  vars:
+    common_name: system:kube-proxy
+    organization: system:node-proxier
+  template:
+    src: common-csr.json.j2
+    dest: /opt/kube-proxy-csr.json
+
+- name: Generate Key and PEM to Kube Proxy
+  shell: |
+    cfssl gencert \
+    -ca=ca.pem \
+    -ca-key=ca-key.pem \
+    -config=ca-config.json \
+    -profile=kubernetes \
+    kube-proxy-csr.json | cfssljson -bare kube-proxy
+  args:
+    chdir: /opt

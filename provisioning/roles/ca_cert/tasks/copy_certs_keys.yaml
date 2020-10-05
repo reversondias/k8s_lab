@@ -1,0 +1,57 @@
+---
+
+- name: Send Certs and Keys to Workers
+  shell: scp -o 'StrictHostKeyChecking no' kube-proxy-key.pem kube-proxy.pem ca.pem {{ item.name }}-key.pem {{ item.name }}.pem {{ item.ip_address }}:~/
+  args:
+    chdir: /opt
+  loop: "{{ workers }}"
+
+- name: Send Certs and Keys to Controllers
+  shell: |
+    scp -o 'StrictHostKeyChecking no' ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem \
+      service-account-key.pem service-account.pem *.kubeconfig  encryption-config.yaml {{ item }}:~/
+  args:
+    chdir: /opt
+  loop:
+    - "{{ groups['controllers'][0] }}"
+    - "{{ groups['controllers'][1] }}"
+    - "{{ groups['controllers'][2] }}"
+
+- name: Create kubeconfig to kubectl on Server Utilities
+  shell: |
+    cp admin.kubeconfig config
+    sed -i "s/127.0.0.1/{{ groups['haproxy'][0] }}/g" config
+  args:
+    chdir: /opt
+
+- name: Send Cert and Key to HA proxy
+  shell: |
+    scp -o 'StrictHostKeyChecking no' ingress-controller.pem \
+      ingress-controller-key.pem \
+      config \
+      ca.pem \
+      kubernetes-key.pem \
+      kubernetes.pem "{{ groups['haproxy'][0] }}":/opt/
+  args:
+    chdir: /opt
+
+- name: Send kubeconfig to kubectl to Server Utilities
+  shell: |
+    scp -o 'StrictHostKeyChecking no' config "{{ groups['haproxy'][0] }}":~/.kube/
+  args:
+    chdir: /opt
+
+- name: Create direcotry /home/user/.kube/
+  file:
+    path: /home/user/.kube
+    state: directory
+    owner: user
+    group: user
+
+- name: Copy kubeconfig to user home
+  copy:
+    src: /opt/config
+    dest: /home/user/.kube/
+    owner: user
+    group: user
+    remote_src: yes

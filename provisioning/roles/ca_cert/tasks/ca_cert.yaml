@@ -1,0 +1,20 @@
+---
+
+- name: Create CA json config
+  template:
+    src: ca-config.json.j2
+    dest: /opt/ca-config.json
+
+- name: Create CA json CSR
+  vars:
+    common_name: Kubernetes
+    organization: Kubernetes
+    org_unit: CA
+  template:
+    src: common-csr.json.j2
+    dest: /opt/ca-csr.json
+
+- name: Generate Key and CA PEM
+  shell: cfssl gencert -initca ca-csr.json | cfssljson -bare ca
+  args:
+    chdir: /opt

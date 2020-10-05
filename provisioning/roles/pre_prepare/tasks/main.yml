@@ -1,0 +1,6 @@
+---
+# tasks file for pre_prepare
+- include: install_kubectl.yaml
+- include: hostname.yaml
+- include: configure_dns.yaml
+#- include: base_packages.yaml

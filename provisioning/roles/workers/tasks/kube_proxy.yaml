@@ -1,0 +1,72 @@
+---
+
+- name: Download kube-proxy
+  get_url:
+    url: "{{ kube_proxy_url }}"
+    dest: /usr/local/bin/
+    mode: "u+x"
+
+- name: "Createing kubeconfig to Kube Proxy on Worker node --> set-cluster <-- "
+  shell: |
+    kubectl config set-cluster kubernetes-the-hard-way \
+    --certificate-authority=ca.pem \
+    --embed-certs=true \
+    --server=https://"{{ groups['haproxy'][0] }}":6443 \
+    --kubeconfig=kube-proxy.kubeconfig
+  args:
+    chdir: ~/
+
+- name: "Createing kubeconfig to Kube Proxy on Worker node --> set-credentials <--"
+  shell: |
+    kubectl config set-credentials system:kube-proxy \
+    --client-certificate=kube-proxy.pem \
+    --client-key=kube-proxy-key.pem \
+    --embed-certs=true \
+    --kubeconfig=kube-proxy.kubeconfig
+  args:
+    chdir: ~/
+
+- name: "Createing kubeconfig to Kube Proxy on Worker node --> set-context <--"
+  shell: |
+    kubectl config set-context default \
+    --cluster=kubernetes-the-hard-way \
+    --user=system:kube-proxy \
+    --kubeconfig=kube-proxy.kubeconfig
+  args:
+    chdir: ~/
+
+- name: "Createing kubeconfig to Kube Proxy on Worker node --> use-context <--"
+  shell: |
+    kubectl config use-context default --kubeconfig=kube-proxy.kubeconfig
+  args:
+    chdir: ~/
+
+- name: Move kube-proxy kubeconfig to /var/lib/kube-proxy/
+  copy:
+    src: /root/kube-proxy.kubeconfig
+    dest: /var/lib/kube-proxy/kubeconfig
+    remote_src: yes
+
+### Remove the below down comments only if you want to use bridge Linux
+### For that change works the parameter on kube-proxy.service.j2 must be change to --config=/var/lib/kube-proxy/kube-proxy-config.yaml
+#- name: Create CNI bridge config file
+#  template:
+#    src: 10-bridge.conf.j2
+#    dest: /etc/cni/net.d/10-bridge.conf
+#
+#- name: Create Kube Proxy kube-proxy-config.yaml file
+#  template:
+#    src: kube-proxy-config.yaml.j2
+#    dest: /var/lib/kube-proxy/kube-proxy-config.yaml
+
+- name: Create Kube Proxy SystemD unit service file
+  template:
+    src: kube-proxy.service.j2
+    dest: /etc/systemd/system/kube-proxy.service
+
+- name: Start and Enable kube-proxy Services
+  systemd:
+    name: kube-proxy
+    state: started
+    enabled: yes
+  notify: Reload Systemd Daemon

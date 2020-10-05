@@ -1,0 +1,15 @@
+- name: Download kubectl
+  get_url:
+    url: '{{ kubectl_url }}'
+    dest: /usr/local/bin/
+    mode: 'u=wrx,go=r'
+
+- name: Configure kubectl bash completion
+  shell: |
+    kubectl completion bash > /etc/bash_completion.d/kubect
+
+- name: Configure command namespace to navigate through them
+  template:
+    src: namespace.j2
+    dest: /usr/local/bin/namespace
+    mode: "+x"

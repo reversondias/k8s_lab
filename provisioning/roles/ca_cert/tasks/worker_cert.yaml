@@ -1,0 +1,23 @@
+---
+
+- name: Create Workers CSR
+  vars:
+    common_name: "system:node:{{ item.name }}"
+    organization: system:nodes
+  template:
+    src: common-csr.json.j2
+    dest: "/opt/{{ item.name }}-csr.json"
+  loop: "{{ workers }}"
+
+- name: Generate Key and PEM to Workers
+  shell: |
+    cfssl gencert \
+    -ca=ca.pem \
+    -ca-key=ca-key.pem \
+    -config=ca-config.json \
+    -hostname={{ item.name }},{{ item.ip_address }} \
+    -profile=kubernetes \
+    {{ item.name }}-csr.json | cfssljson -bare {{ item.name }}
+  args:
+    chdir: /opt
+  loop: "{{ workers }}"

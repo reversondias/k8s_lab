@@ -1,0 +1,20 @@
+---
+
+- name: Create Controller Manager CSR
+  vars:
+    common_name: system:kube-controller-manager
+    organization: system:kube-controller-manager
+  template:
+    src: common-csr.json.j2
+    dest: /opt/kube-controller-manager-csr.json
+
+- name: Generate Key and PEM to Controller Manager
+  shell: |
+    cfssl gencert \
+    -ca=ca.pem \
+    -ca-key=ca-key.pem \
+    -config=ca-config.json \
+    -profile=kubernetes \
+    kube-controller-manager-csr.json | cfssljson -bare kube-controller-manager
+  args:
+    chdir: /opt

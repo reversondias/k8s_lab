@@ -1,0 +1,4 @@
+---
+# tasks file for etcd
+- include: install.yaml
+- include: config.yaml

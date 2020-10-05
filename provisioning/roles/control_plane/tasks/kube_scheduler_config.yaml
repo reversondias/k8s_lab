@@ -1,0 +1,31 @@
+---
+
+- name: Download kube-scheduler
+  get_url:
+    url: '{{ kube_scheduler_url }}'
+    dest: /usr/local/bin/
+    mode: 'u=wrx,go=r'
+
+- name: Move kubeconfig file to /var/lib/kubernetes/ 
+  copy:
+    src: /root/kube-scheduler.kubeconfig
+    dest: /var/lib/kubernetes/
+    remote_src: yes
+
+- name: Create a YAML file to create a KubeScheduleConfiguration
+  template:
+    src: kube-scheduler.yaml.j2
+    dest: /etc/kubernetes/config/kube-scheduler.yaml
+
+- name: Configure kube-scheduler unit SystemD service file
+  template:
+    src: kube-scheduler.service.j2
+    dest: /etc/systemd/system/kube-scheduler.service
+  notify: 
+    - Reload Systemd Daemon
+
+- name: kube-scheduler service
+  systemd:
+    name: kube-scheduler
+    state: started
+    enabled: yes

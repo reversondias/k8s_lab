@@ -1,0 +1,20 @@
+---
+
+- name: Create Admin CSR
+  vars:
+    common_name: admin
+    organization: system:masters
+  template:
+    src: common-csr.json.j2
+    dest: /opt/admin-csr.json
+
+- name: Generate Key and PEM to Admin
+  shell: |
+    cfssl gencert \
+    -ca=ca.pem \
+    -ca-key=ca-key.pem \
+    -config=ca-config.json \
+    -profile=kubernetes \
+    admin-csr.json | cfssljson -bare admin
+  args:
+    chdir: /opt

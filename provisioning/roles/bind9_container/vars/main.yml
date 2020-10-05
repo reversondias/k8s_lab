@@ -1,0 +1,38 @@
+---
+# vars file for bind9_container
+# Use this dictionary registrys to maky new registrys in db file of bind9
+registrys:
+   registry1:
+      name: "kubernetes"
+      type: "A"
+      ip: "{{ groups['haproxy'][0] }}"
+   registry2:
+      name: "controller01"
+      type: "A"
+      ip: "{{ groups['controllers'][0] }}"
+   registry3:
+      name: "controller02"
+      type: "A"
+      ip: "{{ groups['controllers'][1] }}"
+   registry4:
+      name: "controller03"
+      type: "A"
+      ip: "{{ groups['controllers'][2] }}"
+   registry5:
+      name: "worker01"
+      type: "A"
+      ip: "{{ groups['workers'][0] }}"
+   registry6:
+      name: "worker02"
+      type: "A"
+      ip: "{{ groups['workers'][1] }}"
+   registry7:
+      name: "worker03"
+      type: "A"
+      ip: "{{ groups['workers'][2] }}"
+
+#reverse_registrys:
+#   registry1:
+#      name: "mail"
+#      type: "A"
+#      ip: "172.17.0.10"

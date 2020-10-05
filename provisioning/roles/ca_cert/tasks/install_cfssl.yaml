@@ -1,0 +1,11 @@
+- name: Download cfssl
+  get_url:
+    url: '{{ cfssl_url }}'
+    dest: /usr/local/bin/
+    mode: 'u=wrx,go=r'
+
+- name: Download cfssljson
+  get_url:
+    url: '{{ cfssljson_url }}'
+    dest: /usr/local/bin/
+    mode: 'u=wrx,go=r'

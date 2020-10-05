@@ -1,0 +1,26 @@
+---
+- name: Make a templating to Directy Zone
+  template:
+    src: db.zone.j2
+    dest: /tmp/db.zone
+
+- name: Copy file db zone to container 
+  command: docker container cp /tmp/db.zone bind9_dns:/var/named/data/db.zone.test
+
+- name: Test db.zone file
+  command: docker container exec bind9_dns named-checkzone "{{ domain_name }}" /var/named/data/db.zone.test
+  ignore_errors: True
+  register: result
+
+- name: Test OK. Overried the new file
+  command: docker container exec bind9_dns cp  /var/named/data/db.zone.test /var/named/data/db.zone
+  when: result.rc == 0
+
+- name: Restrt container
+  command: docker container restart bind9_dns
+  when: result.rc == 0
+
+- name: Remove temp tempalte
+  file:
+    path: /tmp/db.zone
+    state: absent

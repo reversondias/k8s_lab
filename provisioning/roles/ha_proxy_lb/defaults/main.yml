@@ -1,0 +1,23 @@
+---
+# defaults file for ha_proxy_lb
+kube_apiserver:
+   server1:
+      fqdn: "controller01.{{ domain_name }}"
+      ip: "{{ groups['controllers'][0] }}"
+   server2:
+      fqdn: "controller02.{{ domain_name }}"
+      ip: "{{ groups['controllers'][1] }}"
+   server3:
+      fqdn: "controller03.{{ domain_name }}"
+      ip: "{{ groups['controllers'][2] }}"
+
+workers:
+   server1:
+      fqdn: "worker01.{{ domain_name }}"
+      ip: "{{ groups['workers'][0] }}"
+   server2:
+      fqdn: "worker02.{{ domain_name }}"
+      ip: "{{ groups['workers'][1] }}"
+   server3:
+      fqdn: "worker03.{{ domain_name }}"
+      ip: "{{ groups['workers'][2] }}"

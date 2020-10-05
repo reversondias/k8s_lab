@@ -1,0 +1,6 @@
+---
+
+- name: Create /etc/kubernetes/config to Control Plane
+  file:
+    path: /etc/kubernetes/config
+    state: directory

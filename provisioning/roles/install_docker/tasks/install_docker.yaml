@@ -1,0 +1,22 @@
+---
+- name: Install docker by get.docker.com
+  shell: curl -sk https://get.docker.com/ | bash
+
+- name: Add user vagrant to docker group
+  user:
+    name: vagrant
+    append: yes
+    groups: docker
+    shell: /bin/bash
+
+- name: Install python pip
+  apt:
+    pkg:
+    - python-pip
+    - python3-pip
+    state: present
+
+- name: Install Docker python lib
+  pip:
+    name: docker-py
+    

@@ -1,0 +1,54 @@
+---
+
+- name: Download crictl
+  get_url:
+    url: "{{ crictl_url }}"
+    dest: /opt/crictl-linux-amd64.tar.gz
+  register: crictl_file
+
+- name: Descompact binary crictl .tar file to /usr/local/bin/
+  unarchive:
+    src: "{{ crictl_file.dest }}"
+    dest: /usr/local/bin/
+    remote_src: yes
+    mode: "u=wrx,go=r"
+    owner: root
+    group: root
+
+- name: Download runc
+  get_url:
+    url: "{{ runc_url }}"
+    dest: /usr/local/bin/runc
+    mode: "u+x"
+
+- name: Download ContainerD
+  get_url:
+    url: "{{ containerd_url }}"
+    dest: /opt/containerd-linux-amd64.tar.gz
+  register: containerd_file
+
+- name: Descompact ContainerD .tar file
+  unarchive:
+     src: "{{ containerd_file.dest }}"
+     dest: /bin/
+     remote_src: yes
+     extra_opts:
+      - --strip-components 
+      - "1"
+
+- name: Create ConteinerD config file
+  template:
+    src: config.toml.j2
+    dest: /etc/containerd/config.toml
+
+- name: Create ConteinerD SystemD unit service file
+  template:
+    src: containerd.service.j2
+    dest: /etc/systemd/system/containerd.service
+
+- name: Start and Enable containerd Services
+  systemd:
+    name: containerd
+    state: started
+    enabled: yes
+  notify: Reload Systemd Daemon

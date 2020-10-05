@@ -1,0 +1,45 @@
+---
+
+- name: Create Kube API SSL server dir
+  file:
+    path: "/etc/ssl/{{ item }}"
+    state: directory
+    owner: haproxy
+    group: haproxy
+  loop:
+    - kube_apiserver
+    - ingress_controller
+
+- name: Truncate cert and key to SSL pem certificate
+  shell: |
+    cat kubernetes-key.pem kubernetes.pem > /etc/ssl/kube_apiserver/apiserver.pem
+    chown haproxy: /etc/ssl/kube_apiserver/apiserver.pem
+  args:
+    chdir: /opt
+
+- name: Move Ingress Controller certificate (wildcard *.domain)
+  shell: |
+    cat ingress-controller-key.pem ingress-controller.pem > /etc/ssl/ingress_controller/ingress_controller.pem
+    chown haproxy: /etc/ssl/ingress_controller/ingress_controller.pem
+  args:
+    chdir: /opt
+
+- name: Move ca.pem to right directory
+  shell: |
+    cp ca.pem /etc/ssl/kube_apiserver/
+  args:
+    chdir: /opt
+  
+- name: Configure HA proxy config file
+  template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+
+- name: "[NOTE] Test configure file before restart"
+  shell: haproxy -c -f /etc/haproxy/haproxy.cfg
+
+- name: Restart HA proxy
+  systemd:
+    name: haproxy
+    state: restarted
+    enabled: yes

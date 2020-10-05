@@ -1,0 +1,26 @@
+---
+
+- name: Download kube-controlle-manager
+  get_url:
+    url: '{{ kube_controller_manager_url }}'
+    dest: /usr/local/bin/
+    mode: 'u=wrx,go=r'
+
+- name: Move kubeconfig file to /var/lib/kubernetes/ 
+  copy:
+    src: /root/kube-controller-manager.kubeconfig
+    dest: /var/lib/kubernetes/
+    remote_src: yes
+
+- name: Configure kube-controller-manager unit SystemD service file
+  template:
+    src: kube-controller-manager.service.j2
+    dest: /etc/systemd/system/kube-controller-manager.service
+  notify: 
+    - Reload Systemd Daemon
+
+- name: Restart kube-controller-manager service
+  systemd:
+    name: kube-controller-manager
+    state: started
+    enabled: yes

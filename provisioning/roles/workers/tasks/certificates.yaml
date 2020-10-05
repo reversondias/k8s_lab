@@ -1,0 +1,16 @@
+---
+
+- name: Move certificates to their directories
+  copy:
+    src: "/root/{{ item }}"
+    dest: /var/lib/kubelet/
+    remote_src: yes
+  loop:
+    - "{{ ansible_facts['hostname'] }}-key.pem"
+    - "{{ ansible_facts['hostname'] }}.pem"
+
+- name: Move ca.pem to /var/lib/kubernetes/
+  copy:
+    src: /root/ca.pem
+    dest: /var/lib/kubernetes/
+    remote_src: yes

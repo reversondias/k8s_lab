@@ -1,0 +1,8 @@
+---
+# tasks file for control_plane
+- include: common.yaml
+- include: kube_apiserver_config.yaml
+- include: kube_controller_manager_config.yaml
+- include: kube_scheduler_config.yaml
+- include: kubelet_rbac.yaml
+  when: ansible_facts['hostname'] == "controller01"

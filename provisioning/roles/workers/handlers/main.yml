@@ -1,0 +1,5 @@
+---
+# handlers file for workers
+- name: Reload Systemd Daemon
+  systemd:
+    daemon_reload: yes

@@ -1,0 +1,8 @@
+---
+# tasks file for workers
+- include: base_configs.yaml
+- include: containerd.yaml
+- include: cni.yaml
+- include: certificates.yaml
+- include: kubelet.yaml
+- include: kube_proxy.yaml

@@ -1,0 +1,18 @@
+---
+
+- name: Download CNI Plugins Linux
+  get_url:
+    url: "{{ cni_plugins_linux_url }}"
+    dest: /opt/cni-plugins-linux-amd64.tgz
+  register: cni_plugins_linux_file
+
+- name: Descompact CNI Plugins Linux .tar file
+  unarchive:
+     src: "{{ cni_plugins_linux_file.dest }}"
+     dest: /opt/cni/bin/
+     remote_src: yes
+
+- name: Create CNI loopback network config file
+  template:
+    src: 99-loopback.conf.j2
+    dest: /etc/cni/net.d/99-loopback.conf

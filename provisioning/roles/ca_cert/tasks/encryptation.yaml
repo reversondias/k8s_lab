@@ -1,0 +1,12 @@
+---
+
+- name: Generating Randon Encrypt Key
+  shell: head -c 32 /dev/urandom | base64
+  register: encrypt_key
+
+- name: Create Encryption Config File
+  vars:
+    encrypt: "{{ encrypt_key.stdout }}"
+  template:
+    src: encryption-config.yaml.j2
+    dest: /opt/encryption-config.yaml

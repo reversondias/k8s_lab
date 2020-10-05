@@ -1,0 +1,15 @@
+$TTL 604800
+0.17.172.in-addr.arpa.         IN       SOA      ns1.{{ domain_name }}. admin.{{ domain_name }}. (
+          2013120400 ; Serial
+          604800     ; Refresh
+          86400      ; Retry
+          2419200    ; Expire
+          604800 )   ; Negative Cache TTL
+;
+                   NS       ns1.{{ domain_name }}.
+10		  PTR		dns.{{ domain_name }}.
+9		  PTR		ntp.{{ domain_name }}.
+12		  PTR		ldap.{{ domain_name }}.
+11		  PTR		nfs.{{ domain_name }}.
+
+

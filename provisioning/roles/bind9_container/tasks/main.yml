@@ -1,0 +1,11 @@
+---
+# tasks file for bind9_container
+ - include_tasks: build_image.yml
+   tags:
+       - build_image
+ - include_tasks: run_container.yml
+   tags:
+       - run_container
+ - include_tasks: update_zone.yml
+   tags:
+       - update_zone

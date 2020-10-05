@@ -1,0 +1,8 @@
+---
+# defaults file for control_plane
+kube_apiserver_url: https://storage.googleapis.com/kubernetes-release/release/v1.18.6/bin/linux/amd64/kube-apiserver
+kube_controller_manager_url: https://storage.googleapis.com/kubernetes-release/release/v1.18.6/bin/linux/amd64/kube-controller-manager
+kube_scheduler_url: https://storage.googleapis.com/kubernetes-release/release/v1.18.6/bin/linux/amd64/kube-scheduler
+
+cluster_cidr: 10.200.0.0/16
+service_cluster_ip_rang: 10.32.0.0/24

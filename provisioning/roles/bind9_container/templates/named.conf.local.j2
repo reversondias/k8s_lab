@@ -1,0 +1,10 @@
+zone "{{ domain_name }}"{
+	type master;
+	file "/var/named/data/db.zone";
+
+};
+
+zone "0.17.172.in-addr.arpa"{
+	type master;
+	file "/var/named/data/db.0.17.172";
+};

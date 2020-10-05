@@ -1,0 +1,4 @@
+---
+# tasks file for other_configs
+- include: weave_net.yaml
+- include: coredns.yaml
