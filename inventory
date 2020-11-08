@@ -1,0 +1,23 @@
+[ca_server]
+10.20.20.100 ansible_ssh_private_key_file='/vagrant/.vagrant/machines/utilities/virtualbox/private_key'
+
+[haproxy]
+10.20.20.100 ansible_ssh_private_key_file='/vagrant/.vagrant/machines/utilities/virtualbox/private_key'
+
+[dns]
+10.20.20.100 ansible_ssh_private_key_file='/vagrant/.vagrant/machines/utilities/virtualbox/private_key'
+
+[utilitie_server:children]
+dns
+haproxy
+ca_server
+
+[controllers]
+10.20.20.101 ansible_ssh_private_key_file='/vagrant/.vagrant/machines/controller01/virtualbox/private_key'
+10.20.20.102 ansible_ssh_private_key_file='/vagrant/.vagrant/machines/controller02/virtualbox/private_key'
+10.20.20.103 ansible_ssh_private_key_file='/vagrant/.vagrant/machines/controller03/virtualbox/private_key'
+
+[workers]
+10.20.20.111 ansible_ssh_private_key_file='/vagrant/.vagrant/machines/worker01/virtualbox/private_key'
+10.20.20.112 ansible_ssh_private_key_file='/vagrant/.vagrant/machines/worker02/virtualbox/private_key'
+10.20.20.113 ansible_ssh_private_key_file='/vagrant/.vagrant/machines/worker03/virtualbox/private_key'

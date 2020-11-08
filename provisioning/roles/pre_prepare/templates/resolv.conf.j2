@@ -1,4 +1,5 @@
 nameserver {{ groups['haproxy'][0] }}
 nameserver {{ ansible_facts['default_ipv4']['gateway'] }}
+nameserver {{ local_dns }}
 domain {{ domain_name }}
 search  {{ domain_name }}

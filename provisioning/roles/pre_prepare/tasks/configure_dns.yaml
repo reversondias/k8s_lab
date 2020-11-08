@@ -1,5 +1,9 @@
 ---
 
+- name: Get DNS IP server from NAT
+  shell: grep nameserver /run/systemd/resolve/resolv.conf | awk '{print $2}'
+  register: current_dns
+  
 - name: Disabling systemd-resolv
   systemd:
     name: systemd-resolved
@@ -15,3 +19,5 @@
   template:
     src: resolv.conf.j2
     dest: /etc/resolv.conf
+  vars:
+    local_dns: '{{ current_dns.stdout }}'

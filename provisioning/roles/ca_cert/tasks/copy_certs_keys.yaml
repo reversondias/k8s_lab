@@ -1,7 +1,13 @@
 ---
 
 - name: Send Certs and Keys to Workers
-  shell: scp -o 'StrictHostKeyChecking no' kube-proxy-key.pem kube-proxy.pem ca.pem {{ item.name }}-key.pem {{ item.name }}.pem {{ item.ip_address }}:~/
+  shell: |
+    scp -o 'StrictHostKeyChecking no' -i {{ hostvars[ item.ip_address ]['ansible_ssh_private_key_file'] }} \
+      kube-proxy-key.pem \
+      kube-proxy.pem \
+      ca.pem \
+      {{ item.name }}-key.pem \
+      {{ item.name }}.pem {{ item.ip_address }}:~/
   args:
     chdir: /opt
   loop: "{{ workers }}"

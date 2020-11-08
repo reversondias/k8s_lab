@@ -2,6 +2,7 @@
 
 - name: Prepare Utilitie Server
   hosts: utilitie_server
+  become: yes
   vars:
     domain_name: local-k8s.com
     bind_port: 53
