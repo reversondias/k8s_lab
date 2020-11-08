@@ -1,6 +1,9 @@
 ---
 # tasks file for pre_prepare
 - include: install_kubectl.yaml
-- include: hostname.yaml
+#- include: hostname.yaml
+#  when:  ansible_facts['user_id'] != "vagrant"
+- include: hostname_vagrant.yaml
+  when: lookup('env','USER') == "vagrant"
 - include: configure_dns.yaml
 #- include: base_packages.yaml

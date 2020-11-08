@@ -1,0 +1,33 @@
+---
+
+- name: Chage the Workers hostname
+  vars:
+    number: "{{ item.0|int +1 }}"
+  hostname: 
+    name: worker0{{ number }}
+  with_indexed_items: "{{ groups['workers'] }}"
+  when: group_names[0] == "workers" and ansible_facts['all_ipv4_addresses'][1]  == "{{ item.1 }}"
+  ignore_errors: yes
+
+- name: Chage the Controllers hostname
+  vars:
+    number: "{{ item.0|int +1 }}"
+  hostname: 
+    name: controller0{{ number }}
+  with_indexed_items: "{{ groups['controllers'] }}"
+  when: ansible_facts['all_ipv4_addresses'][1] == item.1
+  ignore_errors: yes
+
+- name: Force gather facts after change Workers hostname
+  setup:
+  delegate_to: "{{item}}"
+  delegate_facts: True
+  loop: "{{groups['workers']}}"
+  when: group_names[0] == "workers"
+
+- name: Force gather facts after change Controllers hostname
+  setup:
+  delegate_to: "{{item}}"
+  delegate_facts: True
+  loop: "{{groups['controllers']}}"
+  when: group_names[0] == "controllers"

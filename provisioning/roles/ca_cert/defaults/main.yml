@@ -1,4 +1,7 @@
 ---
+#Default user to copy certificates to VMs
+spc_user: root
+
 # defaults file for ca_cert
 cfssl_url: https://storage.googleapis.com/kubernetes-the-hard-way/cfssl/1.4.1/linux/cfssl
 cfssljson_url: https://storage.googleapis.com/kubernetes-the-hard-way/cfssl/1.4.1/linux/cfssljson

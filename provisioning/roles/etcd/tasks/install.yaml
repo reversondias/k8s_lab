@@ -38,7 +38,7 @@
     state: directory
     mode: "u=rwx,go="
 
-- name: Copy certificates to ETCD
+- name: Copy certificates to ETCD (as a root)
   copy:
     src: "/root/{{ item }}"
     dest: /etc/etcd/
@@ -47,3 +47,15 @@
     - ca.pem
     - kubernetes-key.pem
     - kubernetes.pem
+  when: spc_user == "root"
+
+- name: Copy certificates to ETCD (as a vagrant user)
+  copy:
+    src: "/home/vagrant/{{ item }}"
+    dest: /etc/etcd/
+    remote_src: yes
+  loop:
+    - ca.pem
+    - kubernetes-key.pem
+    - kubernetes.pem
+  when: spc_user == "vagrant"

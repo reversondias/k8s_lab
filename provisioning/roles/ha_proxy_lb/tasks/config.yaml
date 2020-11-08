@@ -15,20 +15,20 @@
     cat kubernetes-key.pem kubernetes.pem > /etc/ssl/kube_apiserver/apiserver.pem
     chown haproxy: /etc/ssl/kube_apiserver/apiserver.pem
   args:
-    chdir: /opt
+    chdir: /tmp
 
 - name: Move Ingress Controller certificate (wildcard *.domain)
   shell: |
     cat ingress-controller-key.pem ingress-controller.pem > /etc/ssl/ingress_controller/ingress_controller.pem
     chown haproxy: /etc/ssl/ingress_controller/ingress_controller.pem
   args:
-    chdir: /opt
+    chdir: /tmp
 
 - name: Move ca.pem to right directory
   shell: |
     cp ca.pem /etc/ssl/kube_apiserver/
   args:
-    chdir: /opt
+    chdir: /tmp
   
 - name: Configure HA proxy config file
   template:

@@ -7,15 +7,19 @@
       kube-proxy.pem \
       ca.pem \
       {{ item.name }}-key.pem \
-      {{ item.name }}.pem {{ item.ip_address }}:~/
+      {{ item.name }}.pem {{ spc_user }}@{{ item.ip_address }}:~/
   args:
     chdir: /opt
   loop: "{{ workers }}"
 
 - name: Send Certs and Keys to Controllers
   shell: |
-    scp -o 'StrictHostKeyChecking no' ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem \
-      service-account-key.pem service-account.pem *.kubeconfig  encryption-config.yaml {{ item }}:~/
+    scp -o 'StrictHostKeyChecking no' -i {{ hostvars[ item ]['ansible_ssh_private_key_file'] }} \
+      ca.pem ca-key.pem \
+      kubernetes-key.pem kubernetes.pem \
+      service-account-key.pem \
+      service-account.pem \
+      *.kubeconfig  encryption-config.yaml {{ spc_user }}@{{ item }}:~/
   args:
     chdir: /opt
   loop:
@@ -32,32 +36,42 @@
 
 - name: Send Cert and Key to HA proxy
   shell: |
-    scp -o 'StrictHostKeyChecking no' ingress-controller.pem \
+    scp -o 'StrictHostKeyChecking no' -i {{ hostvars[ groups['haproxy'][0] ]['ansible_ssh_private_key_file'] }} \
+      ingress-controller.pem \
       ingress-controller-key.pem \
       config \
       ca.pem \
       kubernetes-key.pem \
-      kubernetes.pem "{{ groups['haproxy'][0] }}":/opt/
+      kubernetes.pem {{ spc_user }}@"{{ groups['haproxy'][0] }}":/tmp
   args:
     chdir: /opt
 
-- name: Send kubeconfig to kubectl to Server Utilities
-  shell: |
-    scp -o 'StrictHostKeyChecking no' config "{{ groups['haproxy'][0] }}":~/.kube/
-  args:
-    chdir: /opt
-
-- name: Create direcotry /home/user/.kube/
+- name: Create direcotry /home/vagrant/.kube/
   file:
-    path: /home/user/.kube
+    path: /home/vagrant/.kube/
     state: directory
-    owner: user
-    group: user
+    owner: vagrant
+    group: vagrant
+  when: spc_user == "vagrant"
 
-- name: Copy kubeconfig to user home
-  copy:
-    src: /opt/config
-    dest: /home/user/.kube/
-    owner: user
-    group: user
-    remote_src: yes
+- name: Send kubectl's kubeconfig to Server Utilities
+  shell: |
+    scp -o 'StrictHostKeyChecking no' -i {{ hostvars[ groups['haproxy'][0] ]['ansible_ssh_private_key_file'] }} \
+    config {{ spc_user }}@"{{ groups['haproxy'][0] }}":~/.kube/
+  args:
+    chdir: /opt
+
+#- name: Create direcotry /home/user/.kube/
+#  file:
+#    path: /home/user/.kube
+#    state: directory
+#    owner: user
+#    group: user
+#
+#- name: Copy kubeconfig to user home
+#  copy:
+#    src: /opt/config
+#    dest: /home/user/.kube/
+#    owner: user
+#    group: user
+#    remote_src: yes

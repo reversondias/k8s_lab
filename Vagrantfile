@@ -36,8 +36,13 @@ Vagrant.configure("2") do |config|
     utilities.vm.network "private_network", ip: "10.20.20.100", virtualbox__intnet: "k8s_network"
     utilities.vm.provision "ansible_local" do |ansible|
       ansible.playbook = "provisioning/main_host_playbook.yml"
+      #ansible.playbook = "test_playbook.yaml"
       ansible.inventory_path = "inventory"
+      ansible.become = true
       ansible.limit = "all"
+      ansible.extra_vars = {
+        spc_user: "vagrant"
+      }
     end
   end
 end

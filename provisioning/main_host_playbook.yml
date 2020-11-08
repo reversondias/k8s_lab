@@ -1,32 +1,33 @@
 ---
 
-- name: Prepare Utilitie Server
-  hosts: utilitie_server
-  become: yes
-  vars:
-    domain_name: local-k8s.com
-    bind_port: 53
-  roles:
-    - pre_prepare 
-    - install_docker
-    - bind9_container
-    - ca_cert
-    - ha_proxy_lb
+#- name: Prepare Utilitie Server
+#  hosts: utilitie_server
+#  vars:
+#    domain_name: local-k8s.com
+#    bind_port: 53
+#  roles:
+#    - pre_prepare 
+#    - install_docker
+#    - bind9_container
+#    - ca_cert
+#    - ha_proxy_lb
 
 - name: Install Controllers
   hosts: controllers
+  vars:
+    spc_user: root
   roles:
     - pre_prepare
-    - etcd
-    - control_plane
+#    - etcd
+#    - control_plane
 
-- name: Install Workers
-  hosts: workers
-  roles:
-    - pre_prepare
-    - workers
+#- name: Install Workers
+#  hosts: workers
+#  roles:
+#    - pre_prepare
+#    - workers
 
-- name: Install More Tools on Kubernetes cluster
-  hosts: utilitie_server
-  roles:
-   - other_configs
+#- name: Install More Tools on Kubernetes cluster
+#  hosts: utilitie_server
+#  roles:
+#   - other_configs

@@ -51,7 +51,7 @@ backend kube_apiserver
 
 frontend Ingress_http
     bind {{ ansible_facts['default_ipv4']['address'] }}:80
-    http-request redirect
+    http-request redirect scheme http
     default_backend ingress_controller_http
 
 backend ingress_controller_http
