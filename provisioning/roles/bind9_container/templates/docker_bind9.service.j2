@@ -1,10 +1,13 @@
 [Unit]
 Description=Start Bind9 Container (DNS Server)
 Documentation=https://github.com/reversondias/k8s_lab
+After=docker.service
+Wants=network-online.target docker.socket
+Requires=docker.socket
 
 [Service]
-ExecStart=/usr/bin/docker start bind9_dns 
-ExecStop=/usr/bin/docker stop bind9_dns 
+ExecStart=/usr/bin/docker start -a bind9_dns 
+ExecStop=/usr/bin/docker stop -t 10 bind9_dns 
 Restart=on-failure
 RestartSec=5
 
