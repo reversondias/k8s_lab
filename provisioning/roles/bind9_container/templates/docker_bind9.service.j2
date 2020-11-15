@@ -1,0 +1,12 @@
+[Unit]
+Description=Start Bind9 Container (DNS Server)
+Documentation=https://github.com/reversondias/k8s_lab
+
+[Service]
+ExecStart=/usr/bin/docker start bind9_dns 
+ExecStop=/usr/bin/docker stop bind9_dns 
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

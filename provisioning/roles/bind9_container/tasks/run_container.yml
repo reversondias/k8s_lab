@@ -12,3 +12,13 @@
       - 8.8.8.8
       - 8.8.4.4
       - 127.0.0.1
+
+- name: Create Container Bind9 SystemD unit service file
+  template:
+    src: docker_bind9.service.j2
+    dest: /etc/systemd/system/docker_bind9.service
+
+- name: Enable Container Bind9 Services
+  systemd:
+    name: docker_bind9
+    enabled: yes

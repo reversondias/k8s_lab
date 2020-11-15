@@ -8,7 +8,7 @@
 
 - name: Move kubeconfig file to /var/lib/kubernetes/ 
   copy:
-    src: /root/kube-scheduler.kubeconfig
+    src: "{{ lookup('env','HOME') }}/kube-scheduler.kubeconfig"
     dest: /var/lib/kubernetes/
     remote_src: yes
 

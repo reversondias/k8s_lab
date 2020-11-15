@@ -5,6 +5,8 @@ Vagrant.configure("2") do |config|
   (1..3).each do |w|
     config.vm.define "worker0#{w}" do |worker|
       worker.vm.network "private_network", ip: "10.20.20.11#{w}", virtualbox__intnet: "k8s_network"
+      worker.vm.hostname = "worker0#{w}"
+      #worker.vm.allow_hosts_modification = false
       worker.vm.provider "virtualbox" do |vm|
         vm.name = "worker0#{w}"
         vm.memory = 512
@@ -17,6 +19,8 @@ Vagrant.configure("2") do |config|
   (1..3).each do |c|
     config.vm.define "controller0#{c}" do |controller|
       controller.vm.network "private_network", ip: "10.20.20.10#{c}", virtualbox__intnet: "k8s_network"
+      controller.vm.hostname = "controller0#{c}"
+      #controller.vm.allow_hosts_modification = false
       controller.vm.provider "virtualbox" do |vm|
         vm.name = "controller0#{c}"
         vm.memory = 2048
@@ -32,6 +36,7 @@ Vagrant.configure("2") do |config|
       vm.memory = 512
       vm.cpus = 1
     end
+    utilities.vm.hostname = "utilities"
     utilities.vm.network "forwarded_port", guest: 443, host: 6443
     utilities.vm.network "private_network", ip: "10.20.20.100", virtualbox__intnet: "k8s_network"
     utilities.vm.provision "ansible_local" do |ansible|

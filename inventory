@@ -12,6 +12,9 @@ dns
 haproxy
 ca_server
 
+[utilitie_server:vars]
+ansible_ssh_private_key_file='/vagrant/.vagrant/machines/utilities/virtualbox/private_key'
+
 [controllers]
 10.20.20.101 ansible_ssh_private_key_file='/vagrant/.vagrant/machines/controller01/virtualbox/private_key'
 10.20.20.102 ansible_ssh_private_key_file='/vagrant/.vagrant/machines/controller02/virtualbox/private_key'

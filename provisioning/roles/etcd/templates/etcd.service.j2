@@ -1,3 +1,6 @@
+{% if 'vagrant' in lookup('env','USER') %} {% set local_machine_ip = ansible_facts['eth1']['ipv4']['address'] %} 
+{% else -%} {% set local_machine_ip = ansible_facts['default_ipv4']['address'] %} 
+{% endif %}
 [Unit]
 Description=etcd
 Documentation=https://github.com/coreos
@@ -14,10 +17,10 @@ ExecStart=/usr/local/bin/etcd \
   --peer-trusted-ca-file=/etc/etcd/ca.pem \
   --peer-client-cert-auth \
   --client-cert-auth \
-  --initial-advertise-peer-urls https://{{ ansible_facts['default_ipv4']['address'] }}:2380 \
-  --listen-peer-urls https://{{ ansible_facts['default_ipv4']['address'] }}:2380 \
-  --listen-client-urls https://{{ ansible_facts['default_ipv4']['address'] }}:2379,https://127.0.0.1:2379 \
-  --advertise-client-urls https://{{ ansible_facts['default_ipv4']['address'] }}:2379 \
+  --initial-advertise-peer-urls https://{{ local_machine_ip }}:2380 \
+  --listen-peer-urls https://{{ local_machine_ip }}:2380 \
+  --listen-client-urls https://{{ local_machine_ip }}:2379,https://127.0.0.1:2379 \
+  --advertise-client-urls https://{{ local_machine_ip }}:2379 \
   --initial-cluster-token etcd-cluster-0 \
   --initial-cluster controller01=https://{{ groups['controllers'][0] }}:2380,controller02=https://{{ groups['controllers'][1] }}:2380,controller03=https://{{ groups['controllers'][2] }}:2380 \
   --initial-cluster-state new \

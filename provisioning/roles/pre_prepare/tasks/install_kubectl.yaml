@@ -2,7 +2,7 @@
   get_url:
     url: '{{ kubectl_url }}'
     dest: /usr/local/bin/
-    mode: 'u=wrx,go=r'
+    mode: '+x'
 
 - name: Configure kubectl bash completion
   shell: |

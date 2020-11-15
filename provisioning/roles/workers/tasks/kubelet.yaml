@@ -7,7 +7,7 @@
     --server=https://"{{ groups['haproxy'][0] }}":6443 \
     --kubeconfig={{ ansible_facts['hostname'] }}.kubeconfig
   args:
-    chdir: ~/
+    chdir: "{{ lookup('env','HOME') }}/"
 
 - name: "Createing kubeconfig to Workers --> set-credentials <--"
   shell: |
@@ -17,7 +17,7 @@
     --embed-certs=true \
     --kubeconfig={{ ansible_facts['hostname'] }}.kubeconfig
   args:
-    chdir: ~/
+    chdir: "{{ lookup('env','HOME') }}/"
 
 - name: "Createing kubeconfig to Workers --> set-context <--"
   shell: |
@@ -26,17 +26,17 @@
     --user=system:node:{{ ansible_facts['hostname'] }} \
     --kubeconfig={{ ansible_facts['hostname'] }}.kubeconfig
   args:
-    chdir: ~/
+    chdir: "{{ lookup('env','HOME') }}/"
 
 - name: "Createing kubeconfig to Workers --> use-context <--"
   shell: |
     kubectl config use-context default --kubeconfig={{ ansible_facts['hostname'] }}.kubeconfig
   args:
-    chdir: ~/
+    chdir: "{{ lookup('env','HOME') }}/"
 
 - name: Move kubeconfig file to their directories
   copy:
-    src: "/root/{{ ansible_facts['hostname'] }}.kubeconfig"
+    src: "{{ lookup('env','HOME') }}/{{ ansible_facts['hostname'] }}.kubeconfig"
     dest: /var/lib/kubelet/kubeconfig
     remote_src: yes
 

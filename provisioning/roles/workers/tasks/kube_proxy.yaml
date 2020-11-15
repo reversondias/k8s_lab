@@ -14,7 +14,7 @@
     --server=https://"{{ groups['haproxy'][0] }}":6443 \
     --kubeconfig=kube-proxy.kubeconfig
   args:
-    chdir: ~/
+    chdir: "{{ lookup('env','HOME') }}/"
 
 - name: "Createing kubeconfig to Kube Proxy on Worker node --> set-credentials <--"
   shell: |
@@ -24,7 +24,7 @@
     --embed-certs=true \
     --kubeconfig=kube-proxy.kubeconfig
   args:
-    chdir: ~/
+    chdir: "{{ lookup('env','HOME') }}/"
 
 - name: "Createing kubeconfig to Kube Proxy on Worker node --> set-context <--"
   shell: |
@@ -33,17 +33,17 @@
     --user=system:kube-proxy \
     --kubeconfig=kube-proxy.kubeconfig
   args:
-    chdir: ~/
+    chdir: "{{ lookup('env','HOME') }}/"
 
 - name: "Createing kubeconfig to Kube Proxy on Worker node --> use-context <--"
   shell: |
     kubectl config use-context default --kubeconfig=kube-proxy.kubeconfig
   args:
-    chdir: ~/
+    chdir: "{{ lookup('env','HOME') }}/"
 
 - name: Move kube-proxy kubeconfig to /var/lib/kube-proxy/
   copy:
-    src: /root/kube-proxy.kubeconfig
+    src: "{{ lookup('env','HOME') }}/kube-proxy.kubeconfig"
     dest: /var/lib/kube-proxy/kubeconfig
     remote_src: yes
 

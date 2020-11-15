@@ -38,6 +38,10 @@ defaults
 frontend Local_Server
     bind {{ ansible_facts['default_ipv4']['address'] }}:443
     bind {{ ansible_facts['default_ipv4']['address'] }}:6443
+{% if 'vagrant' in lookup('env','USER') %} 
+    bind {{ ansible_facts['eth1']['ipv4']['address'] }}:443
+    bind {{ ansible_facts['eth1']['ipv4']['address'] }}:6443 
+{% endif %}
     option tcplog
     mode tcp
     default_backend kube_apiserver
@@ -51,6 +55,9 @@ backend kube_apiserver
 
 frontend Ingress_http
     bind {{ ansible_facts['default_ipv4']['address'] }}:80
+{% if 'vagrant' in lookup('env','USER') %} 
+    bind {{ ansible_facts['eth1']['ipv4']['address'] }}:80
+{% endif %}
     http-request redirect scheme http
     default_backend ingress_controller_http
 
@@ -66,6 +73,9 @@ backend ingress_controller_http
 
 frontend Ingress_https
     bind {{ ansible_facts['default_ipv4']['address'] }}:443 ssl crt /etc/ssl/ingress_controller/ingress_controller.pem
+{% if 'vagrant' in lookup('env','USER') %} 
+    bind {{ ansible_facts['eth1']['ipv4']['address'] }}:443 ssl crt /etc/ssl/ingress_controller/ingress_controller.pem 
+{% endif %}
     http-request redirect scheme https unless { ssl_fc }
     default_backend ingress_controller_https
 

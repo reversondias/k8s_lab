@@ -13,7 +13,7 @@
 
 - name: Move certificates to /var/lib/kubernetes/ 
   copy:
-    src: "/root/{{ item }}"
+    src: "{{ lookup('env','HOME') }}/{{ item }}"
     dest: /var/lib/kubernetes/ 
     remote_src: yes
   loop:
