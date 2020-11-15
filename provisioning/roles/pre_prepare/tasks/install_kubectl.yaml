@@ -6,7 +6,7 @@
 
 - name: Configure kubectl bash completion
   shell: |
-    kubectl completion bash > /etc/bash_completion.d/kubect
+    kubectl completion bash > /etc/bash_completion.d/kubectl
 
 - name: Configure command namespace to navigate through them
   template:

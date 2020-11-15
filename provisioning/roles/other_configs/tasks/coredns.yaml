@@ -7,4 +7,6 @@
 
 - name: Apply coreDNS
   shell: |
-    kubectl apply -f /opt/coredns.yaml
+    kubectl apply \
+     --kubeconfig {{ lookup('env','HOME') }}/.kube/config \
+     -f /opt/coredns.yaml

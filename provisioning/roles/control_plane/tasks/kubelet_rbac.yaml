@@ -12,13 +12,13 @@
 
 - name: Create Cluster Role to Access Kubelet by kubcetl
   shell: |
-    kubectl apply --kubeconfig ~/admin.kubeconfig -f cluster_role_kubelet.yaml
+    kubectl apply --kubeconfig {{ lookup('env','HOME') }}/admin.kubeconfig -f cluster_role_kubelet.yaml
   args:
     chdir: /opt
 
 - name: Create Cluster Role Biding to Access Kubelet by kubectl
   shell: |
-    kubectl apply --kubeconfig ~/admin.kubeconfig -f cluster_role_binding_kubelet.yaml
+    kubectl apply --kubeconfig {{ lookup('env','HOME') }}/admin.kubeconfig -f cluster_role_binding_kubelet.yaml
   args:
     chdir: /opt
 
