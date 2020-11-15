@@ -4,4 +4,5 @@
 - include: hostname.yaml
   when:  lookup('env','USER') != "vagrant"
 - include: configure_dns.yaml
+- include: disable_ubuntu_auto_upgrade.yaml
 #- include: base_packages.yaml

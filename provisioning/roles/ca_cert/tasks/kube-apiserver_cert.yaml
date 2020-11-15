@@ -17,12 +17,12 @@
     -ca=ca.pem \
     -ca-key=ca-key.pem \
     -config=ca-config.json \
-    -hostname={{ kubernets_service_ip }}, \
-    {{ kube_apiservers_ip }}, \
-    {{ groups['haproxy'][0] }}, \
-    127.0.0.1, \
+    -hostname={{ kubernets_service_ip }},\
+    {{ kube_apiservers_ip }},\
+    {{ groups['haproxy'][0] }},\
+    127.0.0.1,\
     {% if 'vagrant' in lookup('env','USER') -%} 
-    {{ ansible_facts['default_ipv4']['address'] }}, \
+    {{ ansible_facts['default_ipv4']['address'] }},\
     {%- endif %}
     {{ kubernetes_names }} \
     -profile=kubernetes \
