@@ -1,8 +1,13 @@
 ---
 
+- name: Get stats of /etc/apt/apt.conf.d/20auto-upgrades
+  stat:
+    path: /petc/apt/apt.conf.d/20auto-upgrades
+  register: upgrade_file
+
 - name: Disable auto upgrade Ubuntu or Debian
   lineinfile:
     path: /etc/apt/apt.conf.d/20auto-upgrades
     regexp: '*Unattended-Upgrade*'
     line: 'APT::Periodic::Unattended-Upgrade "0";'
-  when: ansible_facts['distribution'] == "Debian" or ansible_facts['distribution'] == "Ubuntu"
+  when: (ansible_facts['distribution'] == "Debian" or ansible_facts['distribution'] == "Ubuntu") and upgrade_file.stat.exists
