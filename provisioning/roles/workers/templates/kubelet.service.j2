@@ -11,9 +11,6 @@ ExecStart=/usr/local/bin/kubelet \
   --container-runtime-endpoint=unix:///var/run/containerd/containerd.sock \
   --image-pull-progress-deadline=2m \
   --kubeconfig=/var/lib/kubelet/kubeconfig \
-{% if 'vagrant' in lookup('env','USER') %}
-  --node-ip="{{ ansible_facts['eth1']['ipv4']['address'] }}" \
-{% endif %}
   --network-plugin=cni \
   --register-node=true \
   --v=2
